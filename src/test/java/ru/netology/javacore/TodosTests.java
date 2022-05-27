@@ -13,7 +13,7 @@ public class TodosTests {
 
     @BeforeEach
     public void initTest() {
-        System.out.println("Старт нового теста");
+        System.out.println("Старт теста");
         todos = new Todos();
     }
 
