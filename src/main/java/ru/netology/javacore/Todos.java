@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Todos {
-    protected String type, task;
     protected List<String> tasks = new ArrayList<>();
 
     public void addTask(String task) {

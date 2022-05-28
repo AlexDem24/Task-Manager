@@ -1,14 +1,13 @@
 package ru.netology.javacore;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TodoServer {
-    int port;
+    protected int port;
     protected Todos todos;
 
     public TodoServer(int port, Todos todos) {
@@ -19,20 +18,23 @@ public class TodoServer {
     public void start() throws IOException {
         System.out.println("Starting server at " + port + "...");
         try (ServerSocket serverSocket = new ServerSocket(port)) {
+            Gson gson = new Gson();
             while (true) {
                 try (Socket clientSocket = serverSocket.accept();
                      PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
-                    ) {
+                ) {
                     String json = in.readLine();
-                    Gson gson = new GsonBuilder().create();
-                    Todos td = gson.fromJson(json, Todos.class);
-                    if (td.type.equals("ADD")) {
-                        todos.addTask(td.task);
-                    } else {
-                        todos.removeTask(td.task);
+                    Operation op = gson.fromJson(json, Operation.class);
+                    switch (op.getType()) {
+                        case "ADD":
+                            todos.addTask(op.getTask());
+                            break;
+                        case "REMOVE":
+                            todos.removeTask(op.getTask());
+                            break;
                     }
-                    out.println(todos.getAllTasks());
+                    out.println("Актуальные задачи: " + todos.getAllTasks());
                 }
             }
         } catch (IOException e) {
